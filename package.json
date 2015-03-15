@@ -1,0 +1,22 @@
+{
+  "name" : "pagenav",
+  "description": "A jQuery responsive pagination plugin",
+  "keywords": [
+    "pagination",
+    "ui",
+    "jquery",
+    "responsie"
+  ],
+  "version" : "0.0.1",
+  "author" : "Mark Serbol <markserbol@gmail.com>",
+  "dependencies": {
+    "jquery": ">=1.7.0"
+  },
+  "devDependencies" : {
+    "grunt" : "~0.4.0",
+    "grunt-contrib-jshint" : "*",
+    "grunt-contrib-uglify" : "*",
+    "grunt-contrib-copy": "*",
+    "grunt-contrib-watch" : "*"
+  }
+}

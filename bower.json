@@ -1,0 +1,23 @@
+{
+  "name": "pagenav",
+  "version": "0.0.0",
+  "authors": [
+    "Mark Serbol <markserbol@gmail.com>"
+  ],
+  "main": "dist/pagenav.js",
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "src",
+    "node_modules",
+    "bower_components",
+    "README.md",
+    "bower.json",
+    "Gruntfile.js",
+    "package.json",
+    "examples"
+  ],
+  "dependencies": {
+    "jquery": ">=1.7.0"
+  }
+}
