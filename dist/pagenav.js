@@ -42,9 +42,10 @@
         
         // get the options data from HTML
         data = {
-          items: container.data('items'),
+          totalItems: container.data('items'),
           visibleItems: container.data('visible-items'),
           href: container.data('url-pattern'),
+          hrefPattern: container.data('href-pattern'),
           currentItem: container.data('current')
         };
         

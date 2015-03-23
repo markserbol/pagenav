@@ -42,9 +42,10 @@
         
         // get the options data from HTML
         data = {
-          items: container.data('items'),
+          totalItems: container.data('total-items'),
           visibleItems: container.data('visible-items'),
           href: container.data('url-pattern'),
+          hrefPattern: container.data('href-pattern'),
           currentItem: container.data('current')
         };
         
@@ -67,7 +68,7 @@
         
         // Appending to the DOM multiple times causes mass redraws,      
         // so we need to add all the nav items in an array... 
-        for(var i = start; i <= end; i++) {
+        for(var i = start; i < end; i++) {
           
           item = $(listItem);
           item.children('a').html(i).addHref(i);
