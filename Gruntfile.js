@@ -23,6 +23,9 @@ module.exports = function (grunt) {
     
     uglify: {
       build: {
+        options: {
+          preserveComments: 'some'
+        },
         files: [{
           cwd: 'src',
           src: '**/*.js',

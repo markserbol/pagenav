@@ -1,3 +1,5 @@
+/*! pagenav.js v0.0.1 | MIT License | https://github.com/markserbol/pagenav */
+
 (function($) {
   
   var self = this;

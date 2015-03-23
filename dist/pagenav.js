@@ -1,3 +1,5 @@
+/*! pagenav.js v0.0.1 | MIT License | https://github.com/markserbol/pagenav */
+
 (function($) {
   
   var self = this;
@@ -5,8 +7,8 @@
   self.defaults = {
     totalItems: 15,
     visibleItems: 10,
-    href: 'page-{{number}}.html',
-    hrefPattern: '**number**',
+    href: '?page-{{number}}.html',
+    hrefPattern: '{{number}}',
     currentItem: 3,
     itemClass: 'pagenav__item',
     currentItemClass: 'pagenav__item--current',
@@ -21,7 +23,7 @@
   self.options = {};
   
   $.fn.addHref = function(itemIndex) {
-    $(this).prop('href', self.options.href.replace('***', itemIndex));
+    $(this).attr('href', self.options.href.replace(self.options.hrefPattern, itemIndex));
   };
   
   var methods = {
@@ -30,23 +32,23 @@
        
       return this.each(function() {
         
-        var $container = $(this), link, data, listItem, items = [], $item, $next, $prev;
+        var container = $(this), itemLink, data, listItem, items = [], item, next, prev;
         
-        // get the options data in HTML
+        // get the options data from HTML
         data = {
-          items: $container.data('items'),
-          visibleItems: $container.data('visible-items'),
-          href: $container.data('url-pattern'),
-          currentItem: $container.data('current')
+          items: container.data('items'),
+          visibleItems: container.data('visible-items'),
+          href: container.data('url-pattern'),
+          currentItem: container.data('current')
         };
         
         //
         settings = $.extend(self.options, self.defaults, settings, data);
            
         // build the nav item <li> and <a> HTML structure   
-        link = '<a class=" ' + settings.itemLinkClass + ' "></a>';
+        itemLink = '<a class=" ' + settings.itemLinkClass + ' "></a>';
         
-        listItem = '<li class=" ' + settings.itemClass + ' ">' + link + '</li>';
+        listItem = '<li class=" ' + settings.itemClass + ' ">' + itemLink + '</li>';
 
     
         // Get the current item
@@ -61,54 +63,54 @@
         // so we need to add all the nav items in an array... 
         for(var i = first; i <= end; i++) {
           
-          $item = $(listItem);
-          $item.children('a').html(i).addHref(i);
+          item = $(listItem);
+          item.children('a').html(i).addHref(i);
           
           if(i === current) {
-            $item.addClass(settings.currentItemClass);
+            item.addClass(settings.currentItemClass);
           }
           
-          items.push($item.prop('outerHTML'));
+          items.push(item.prop('outerHTML'));
         }
         
         // ... including the previous and next nav items...
-        $prev = $(listItem).addClass(settings.itemPrevClass);
+        prev = $(listItem).addClass(settings.itemPrevClass);
         
-        $prev.find('a').html(settings.itemPrevContent);
+        prev.find('a').html(settings.itemPrevContent);
         
         if(current > 1) {
-          $prev.find('a').addHref(current - 1);
+          prev.find('a').addHref(current - 1);
         } else {
-          $prev.addClass(settings.itemDisabledClass);
+          prev.addClass(settings.itemDisabledClass);
         }
         
-        items.splice(0, 0, $prev.prop('outerHTML'));
+        items.splice(0, 0, prev.prop('outerHTML'));
         
-        $next = $(listItem).addClass(settings.itemNextClass);
+        next = $(listItem).addClass(settings.itemNextClass);
         
-        $next.find('a').html(settings.itemNextContent);  
+        next.find('a').html(settings.itemNextContent);  
         
         if(current < settings.totalItems) {
-          $next.find('a').addHref(current + 1);
+          next.find('a').addHref(current + 1);
         } else {
-          $next.addClass(settings.itemDisabledClass);
+          next.addClass(settings.itemDisabledClass);
         }
         
-        items.push($next.prop('outerHTML'));
+        items.push(next.prop('outerHTML'));
         
         // ... and append them to the DOM at once.
-        $container.append(items.join(''));
+        container.append(items.join(''));
         
-        // On browser resize check which item overflows outside the $container
+        // On browser resize check which item overflows outside the container
         // 
         $(window).on('resize.pagenav', function() {
           
-          var $containerWidth = $container.width(),
-              prev = $container.find('.'+settings.itemPrevClass),
+          var containerWidth = container.width(),
+              prev = container.find('.'+settings.itemPrevClass),
               prevWidth = prev.outerWidth(true),
-              next = $container.find('.'+settings.itemNextClass),
+              next = container.find('.'+settings.itemNextClass),
               nextWidth = next.outerWidth(true),
-              items = $container.find('.'+settings.itemClass).not(prev).not(next),
+              items = container.find('.'+settings.itemClass).not(prev).not(next),
               widths = prevWidth + nextWidth,
               lastItemIndex = 0;
           
@@ -119,9 +121,9 @@
                 itemWidth = item.outerWidth(true);
             window.console.log(lastItemIndex);
             
-            // add up the item's width and compare it to the $container's width
-            // to determine if it will overflow outside the $container
-            if(widths + itemWidth <= $containerWidth) {
+            // add up the item's width and compare it to the container's width
+            // to determine if it will overflow outside the container
+            if(widths + itemWidth <= containerWidth) {
               widths += itemWidth;
               lastItemIndex = index;
             } else {
@@ -135,7 +137,7 @@
           items.show().slice(lastItemIndex + 1).hide();
                 
         }).trigger('resize.pagenav');
-        
+ 
       });    
       
     },
