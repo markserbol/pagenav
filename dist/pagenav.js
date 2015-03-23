@@ -42,7 +42,7 @@
         
         // get the options data from HTML
         data = {
-          totalItems: container.data('items'),
+          totalItems: container.data('total-items'),
           visibleItems: container.data('visible-items'),
           href: container.data('url-pattern'),
           hrefPattern: container.data('href-pattern'),
@@ -51,6 +51,11 @@
         
         // merge all the settings objects
         settings = $.extend(self.options, self.defaults, settings, data);
+        
+        // check for some setting errors
+        if(settings.currentItem > settings.totalItems) {
+          $.error('The curent item should not be higher than the total number of items');
+        }
            
         // build the nav item <li> and <a> HTML structure   
         itemLink = '<a class=" ' + settings.itemLinkClass + ' "></a>';
@@ -63,7 +68,7 @@
         // Set the last item base on the visibleItems
         var current = settings.currentItem,
             start = current > 1 ? current - 1 : 1,
-            end = settings.totalItems - (end = start + settings.visibleItems) < 0 ? settings.totalItems : end; 
+            end = settings.totalItems - (end = start + settings.visibleItems - 1) < 0 ? settings.totalItems : end; 
         
         
         // Appending to the DOM multiple times causes mass redraws,      
@@ -221,7 +226,7 @@
     } else if (typeof method === 'object' || !method) {
       return methods.init.apply(this, arguments);
     } else {
-      $.error('Method "' + method + '" does not exist on folio');
+      $.error('Method "' + method + '" does not exist on pagenav');
     }
   };
   
