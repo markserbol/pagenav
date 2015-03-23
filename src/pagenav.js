@@ -10,13 +10,19 @@
     href: '?page-{{number}}.html',
     hrefPattern: '{{number}}',
     currentItem: 3,
+    showFirstLast: true,
+    showPrevNext: true,
     itemClass: 'pagenav__item',
     currentItemClass: 'pagenav__item--current',
     itemLinkClass: 'pagenav__item-link',
     itemPrevClass: 'pagenav__item-prev',
     itemNextClass: 'pagenav__item-next',
+    itemFirstClass: 'pagenav__item-first',
+    itemLastClass: 'pagenav__item-last',
     itemPrevContent: 'Previous',
     itemNextContent: 'Next',
+    itemFirstContent: 'First',
+    itemLastContent: 'Last',
     itemDisabledClass: 'pagenav__item--disabled'
   };
   
@@ -32,7 +38,7 @@
        
       return this.each(function() {
         
-        var container = $(this), itemLink, data, listItem, items = [], item, next, prev;
+        var container = $(this), itemLink, data, listItem, items = [], item, next, prev, first, last;
         
         // get the options data from HTML
         data = {
@@ -42,7 +48,7 @@
           currentItem: container.data('current')
         };
         
-        //
+        // merge all the settings objects
         settings = $.extend(self.options, self.defaults, settings, data);
            
         // build the nav item <li> and <a> HTML structure   
@@ -55,13 +61,13 @@
         // Set the first item which is the previous of the current item
         // Set the last item base on the visibleItems
         var current = settings.currentItem,
-            first = current > 1 ? current - 1 : 1,
-            end = settings.totalItems - (end = first + settings.visibleItems) < 0 ? settings.totalItems : end; 
+            start = current > 1 ? current - 1 : 1,
+            end = settings.totalItems - (end = start + settings.visibleItems) < 0 ? settings.totalItems : end; 
         
         
         // Appending to the DOM multiple times causes mass redraws,      
         // so we need to add all the nav items in an array... 
-        for(var i = first; i <= end; i++) {
+        for(var i = start; i <= end; i++) {
           
           item = $(listItem);
           item.children('a').html(i).addHref(i);
@@ -74,48 +80,89 @@
         }
         
         // ... including the previous and next nav items...
-        prev = $(listItem).addClass(settings.itemPrevClass);
-        
-        prev.find('a').html(settings.itemPrevContent);
-        
-        if(current > 1) {
-          prev.find('a').addHref(current - 1);
-        } else {
-          prev.addClass(settings.itemDisabledClass);
+        if(settings.showPrevNext) {
+          prev = $(listItem).addClass(settings.itemPrevClass);
+
+          prev.find('a').html(settings.itemPrevContent);
+
+          if(current > 1) {
+            prev.find('a').addHref(current - 1);
+          } else {
+            prev.addClass(settings.itemDisabledClass);
+          }
+
+          items.splice(0, 0, prev.prop('outerHTML'));
+
+          next = $(listItem).addClass(settings.itemNextClass);
+
+          next.find('a').html(settings.itemNextContent);  
+
+          if(current < settings.totalItems) {
+            next.find('a').addHref(current + 1);
+          } else {
+            next.addClass(settings.itemDisabledClass);
+          }
+
+          items.push(next.prop('outerHTML'));
         }
         
-        items.splice(0, 0, prev.prop('outerHTML'));
-        
-        next = $(listItem).addClass(settings.itemNextClass);
-        
-        next.find('a').html(settings.itemNextContent);  
-        
-        if(current < settings.totalItems) {
-          next.find('a').addHref(current + 1);
-        } else {
-          next.addClass(settings.itemDisabledClass);
+        // ... and the fist and last nav items...
+        if(settings.showFirstLast) {
+          first = $(listItem).addClass(settings.itemFirstClass);
+          
+          first.find('a').html(settings.itemFirstContent);
+          
+          if(current === 1) {
+            first.addClass(settings.itemDisabledClass);
+          } else {
+            first.find('a').addHref(1);
+          }
+          
+          items.splice(0, 0, first.prop('outerHTML'));
+          
+          last = $(listItem).addClass(settings.itemLastClass);
+          
+          last.find('a').html(settings.itemLastContent);
+          
+          if(current === settings.totalItems) {
+            last.addClass(settings.itemDisabledClass);
+          } else {
+            last.find('a').addHref(settings.totalItems);
+          }
+          
+          items.push(last.prop('outerHTML'));
         }
         
-        items.push(next.prop('outerHTML'));
-        
-        // ... and append them to the DOM at once.
+        // ... then append them to the DOM at once.
         container.append(items.join(''));
         
         // On browser resize check which item overflows outside the container
         // 
         $(window).on('resize.pagenav', function() {
           
-          var containerWidth = container.width(),
-              prev = container.find('.'+settings.itemPrevClass),
-              prevWidth = prev.outerWidth(true),
-              next = container.find('.'+settings.itemNextClass),
-              nextWidth = next.outerWidth(true),
-              items = container.find('.'+settings.itemClass).not(prev).not(next),
-              widths = prevWidth + nextWidth,
+          var prev = '', next = '', first = '', last = '', 
+              containerWidth = container.width(), 
+              widths = 0,
               lastItemIndex = 0;
+          
+          if(settings.showPrevNext) {
+            prev = container.find('.'+settings.itemPrevClass);
+            next = container.find('.'+settings.itemNextClass);
+            
+            widths += prev.outerWidth(true) + next.outerWidth(true);
+          }
+          
+          if(settings.showFirstLast) {
+            first = container.find('.'+settings.itemFirstClass);
+            last = container.find('.'+settings.itemLastClass);
+            
+            widths += first.outerWidth(true) + last.outerWidth(true);
+          }
           
           // loop through each item 
           // to get the index of last item that needs to be shown
+          var items = container.find('.'+settings.itemClass).not(prev).not(next).not(first).not(last);
+          
           items.each(function(index) {
             var item = $(this),
                 itemWidth = item.outerWidth(true);
