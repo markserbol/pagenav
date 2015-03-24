@@ -44,7 +44,7 @@
         data = {
           totalItems: container.data('total-items'),
           visibleItems: container.data('visible-items'),
-          href: container.data('url-pattern'),
+          href: container.data('href'),
           hrefPattern: container.data('href-pattern'),
           currentItem: container.data('current')
         };
